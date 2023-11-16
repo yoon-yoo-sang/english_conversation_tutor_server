@@ -9,10 +9,11 @@ from openai.types.beta import Assistant, Thread
 from openai.types.beta.threads import Run, ThreadMessage
 
 from openai_integration.choices import OpenAIModel
+from openai_integration.tools import functions
 
 
 class Chat(OpenAI):
-    def __init__(self):
+    def __init__(self, thread_id=None):
         load_dotenv()
         api_key = os.getenv('OPENAI_API_KEY')
         super().__init__(api_key=api_key)
@@ -26,11 +27,12 @@ class Chat(OpenAI):
             self.english_tutor: Assistant = self.beta.assistants.create(
                 name="English Tutor",
                 instructions=instruction,
-                tools=[{"type": "code_interpreter"}],
-                model=OpenAIModel.NEW_GPT4.value
+                tools=[{"type": "code_interpreter"}, *functions],
+                model=OpenAIModel.NEW_GPT4.value,
             )
 
-            self.thread: Thread = self.beta.threads.create()
+            self.thread: Thread = self.beta.threads.retrieve(thread_id=thread_id) if thread_id else self.beta.threads.create()
+
         except Exception as e:
             logging.error(e)
 
@@ -83,11 +85,12 @@ class Chat(OpenAI):
     def wait_until_run_is_completed(self, run):
         try:
             while True:
-                status = self.check_run_status(run)
-                if status.status == 'completed':
+                run = self.check_run_status(run)
+                print(run.status)
+                if run.status == 'completed':
                     break
-                elif status.status == 'failed':
-                    raise Exception(status.error)
+                elif run.status == 'failed':
+                    raise Exception(run.error)
                 time.sleep(1)
         except Exception as e:
             logging.error(e)
