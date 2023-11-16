@@ -86,11 +86,12 @@ class Chat(OpenAI):
         try:
             while True:
                 run = self.check_run_status(run)
-                print(run.status)
                 if run.status == 'completed':
                     break
-                elif run.status == 'failed':
+                if run.status == 'failed':
                     raise Exception(run.error)
+                if run.status == 'requires_action':
+                    raise Exception(run.required_action)
                 time.sleep(1)
         except Exception as e:
             logging.error(e)
