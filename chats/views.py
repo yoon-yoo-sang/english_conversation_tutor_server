@@ -1,11 +1,13 @@
 from django.db import transaction
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.mixins import CreateModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from chats.models import Chat, Message
-from chats.serializers import ChatSerializer, MessageSerializer, MessagePairSerializer
+from chats.serializers import ChatSerializer, MessageSerializer, MessagePairSerializer, MessageCreateSerializer
+from common.serializers import EmptySerializer
 from common.views import BaseViewSet
 from openai_integration.openai_chat import Chat as OpenAIChat
 
@@ -19,6 +21,10 @@ class ChatViewSet(BaseViewSet, CreateModelMixin):
         queryset = super().get_queryset()
         return queryset.filter(user=self.request.user)
 
+    @swagger_auto_schema(
+        request_body=EmptySerializer,
+        responses={200: ChatSerializer}
+    )
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         user = request.user
@@ -47,6 +53,10 @@ class MessageViewSet(BaseViewSet, CreateModelMixin):
         'chat',
     )
 
+    @swagger_auto_schema(
+        request_body=MessageCreateSerializer,
+        responses={200: MessagePairSerializer}
+    )
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         try:

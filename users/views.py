@@ -1,31 +1,31 @@
 from django.core.exceptions import MultipleObjectsReturned
 from django.db import transaction
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from common.serializers import EmptySerializer
 from common.views import BaseViewSet
 from users.models import User
-from users.serializers import UserSerializer
+from users.serializers import UserSerializer, SignUpSerializer
 
 
 class UserViewSet(BaseViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    @swagger_auto_schema(
+        request_body=SignUpSerializer,
+        responses={201: EmptySerializer}
+    )
     @transaction.atomic
     @action(methods=['post'], detail=False)
     def sign_up(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        email = request.data.get('email')
-        password = request.data.get('password')
-
         try:
-            User.objects.create_user(
-                username=username,
-                email=email,
-                password=password
-            )
+            serializer = SignUpSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
         except MultipleObjectsReturned:
             return self.handle_error('User with this email already exists', status.HTTP_400_BAD_REQUEST)
         except ValueError:

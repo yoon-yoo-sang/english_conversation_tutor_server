@@ -24,6 +24,15 @@ class MessageSerializer(serializers.ModelSerializer):
         )
 
 
+class MessageCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = (
+            'chat',
+            'content',
+        )
+
+
 class MessagePairSerializer(serializers.Serializer):
     user_message = MessageSerializer()
     assistant_message = MessageSerializer()
