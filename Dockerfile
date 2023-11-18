@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM python:3.11-alpine AS builder
+FROM python:3.11-alpine AS builder
 EXPOSE 8000
 WORKDIR /app
 COPY requirements.txt /app
