@@ -3,5 +3,5 @@ build:
     web: Dockerfile
 run:
   env:
-    SECRET_KEY: { { secrets.SECRET_KEY } }
+    SECRET_KEY: "django"
   web: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
