@@ -14,8 +14,7 @@ MODE = os.environ.get('MODE')
 
 DEBUG = True if MODE == 'dev' else False
 
-# TODO: Add domain name instead of *
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"] if DEBUG else ["*"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"] if DEBUG else ['english-conversation-tutor-6d013822cb8f.herokuapp.com/']
 
 INSTALLED_APPS = [
     "django.contrib.admin",
