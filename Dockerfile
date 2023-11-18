@@ -1,5 +1,6 @@
 FROM python:3.11-alpine AS builder
 EXPOSE $PORT
+ENV SECRET_KEY $SECRET_KEY
 WORKDIR /app
 COPY requirements.txt /app
 RUN pip3 install -r requirements.txt
