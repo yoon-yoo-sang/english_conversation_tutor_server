@@ -42,5 +42,7 @@ python: 3.11.5
 ├── .gitignore
 ├── manage.py
 ├── README.md
+├── docker-compose.yaml
+├── Dockerfile
 └── requirements.txt
 ```
