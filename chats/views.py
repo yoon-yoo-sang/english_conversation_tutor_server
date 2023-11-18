@@ -1,15 +1,17 @@
 from django.db import transaction
 from rest_framework import status
 from rest_framework.mixins import CreateModelMixin
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from chats.models import Chat, Message
-from chats.serializers import ChatSerializer, MessageSerializer
+from chats.serializers import ChatSerializer, MessageSerializer, MessagePairSerializer
 from common.views import BaseViewSet
 from openai_integration.openai_chat import Chat as OpenAIChat
 
 
 class ChatViewSet(BaseViewSet, CreateModelMixin):
+    permission_classes = [IsAuthenticated]
     queryset = Chat.objects.all()
     serializer_class = ChatSerializer
 
@@ -18,26 +20,27 @@ class ChatViewSet(BaseViewSet, CreateModelMixin):
         return queryset.filter(user=self.request.user)
 
     @transaction.atomic
-    async def create(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         user = request.user
         chat = OpenAIChat()
         thread_id = chat.thread.id
 
         try:
-            Chat.objects.create(
-                user=user,
-                thread_id=thread_id
-            )
+            chat_data = {
+                'user': user.id,
+                'thread_id': thread_id
+            }
+            serializer = self.get_serializer(data=chat_data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
         except Exception as e:
-            return self.handle_error(e, status.HTTP_500_INTERNAL_SERVER_ERROR, user.id)
+            return self.handle_error(str(e), status.HTTP_500_INTERNAL_SERVER_ERROR, user.id)
 
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        return Response(serializer.data)
+        return Response(status=status.HTTP_201_CREATED, data=serializer.data)
 
 
 class MessageViewSet(BaseViewSet, CreateModelMixin):
+    permission_classes = [IsAuthenticated]
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
     filter_fields = (
@@ -45,35 +48,39 @@ class MessageViewSet(BaseViewSet, CreateModelMixin):
     )
 
     @transaction.atomic
-    async def create(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         try:
-            chat = Chat.objects.get(id=request.data['chat'])
+            chat_id = request.data['chat']
+            chat = Chat.objects.get(id=chat_id)
             content = request.data['content']
         except Exception as e:
-            return self.handle_error(e, status.HTTP_400_BAD_REQUEST, request.user.id)
+            return self.handle_error(str(e), status.HTTP_400_BAD_REQUEST, request.user.id)
 
         try:
-            chat = OpenAIChat(chat.thread_id)
-            chat.create_user_message(content)
-            run = chat.run_assistant()
-            chat.wait_until_run_is_completed(run)
+            openai_chat = OpenAIChat(chat.thread_id)
+            response_message_content = openai_chat.send_message(content)
         except Exception as e:
-            return self.handle_error(e, status.HTTP_500_INTERNAL_SERVER_ERROR, request.user.id)
+            return self.handle_error(str(e), status.HTTP_500_INTERNAL_SERVER_ERROR, request.user.id)
 
-        request_message = Message(
-            chat=chat,
+        request_message_data = dict(
+            chat=chat_id,
             role='user',
             content=content
         )
 
-        response_message_content = run.content[0].text.value
-        response_message = Message(
-            chat=chat,
+        response_message_data = dict(
+            chat=chat_id,
             role='assistant',
             content=response_message_content
         )
 
-        serializer = self.get_serializer(data=[request_message, response_message], many=True)
-        serializer.is_valid(raise_exception=True)
+        message_pair_data = dict(
+            user_message=request_message_data,
+            assistant_message=response_message_data
+        )
 
-        return Response(serializer.data)
+        message_pair_serializer = MessagePairSerializer(data=message_pair_data)
+        message_pair_serializer.is_valid(raise_exception=True)
+        message_pair_serializer.save()
+
+        return Response(message_pair_serializer.data)

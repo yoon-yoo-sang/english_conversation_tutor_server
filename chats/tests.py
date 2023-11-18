@@ -23,6 +23,7 @@ class ChatTestCase(TestCase):
         run = chat.run_assistant()
         chat.wait_until_run_is_completed(run)
         status = chat.check_run_status(run)
+        print(chat.thread.id)
 
         self.assertEquals(status.status, 'completed')
 

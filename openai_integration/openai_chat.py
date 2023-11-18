@@ -36,6 +36,13 @@ class Chat(OpenAI):
         except Exception as e:
             logging.error(e)
 
+    def send_message(self, content: str) -> str:
+        self.create_user_message(content)
+        run = self.run_assistant()
+        self.wait_until_run_is_completed(run)
+        messages = self.list_messages().data
+        return messages[0].content[0].text.value
+
     def create_user_message(self, content) -> ThreadMessage:
         try:
             message: ThreadMessage = self.beta.threads.messages.create(
