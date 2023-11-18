@@ -10,4 +10,5 @@ RUN python3 manage.py migrate users
 RUN python3 manage.py migrate
 
 EXPOSE $PORT
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:$PORT"]
+CMD ["sh", "-c", "echo Port is $PORT && exec gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"]
+
