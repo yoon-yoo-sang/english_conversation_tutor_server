@@ -5,4 +5,7 @@ COPY requirements.txt /app
 RUN pip3 install -r requirements.txt
 COPY . /app
 ENTRYPOINT ["python3"]
+CMD ["manage.py", "migrate", "users"]
+CMD ["manage.py", "migrate", "chats"]
+CMD ["manage.py", "migrate"]
 CMD ["manage.py", "runserver", "0.0.0.0:8000"]
