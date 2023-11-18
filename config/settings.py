@@ -14,6 +14,7 @@ MODE = os.environ.get('MODE')
 
 DEBUG = True if MODE == 'dev' else False
 
+# TODO: Add domain name instead of *
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"] if DEBUG else ["*"]
 
 INSTALLED_APPS = [
