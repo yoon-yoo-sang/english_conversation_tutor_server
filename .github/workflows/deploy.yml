@@ -1,6 +1,9 @@
 # Your workflow name.
 name: Deploy to heroku.
 
+env:
+    SECRET_KEY: {{ secrets.SECRET_KEY }}
+
 # Run workflow on every push to main branch.
 on:
   push:
