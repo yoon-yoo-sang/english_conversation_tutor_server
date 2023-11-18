@@ -14,7 +14,7 @@ MODE = os.environ.get('MODE')
 
 DEBUG = True if MODE == 'dev' else False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"] if DEBUG else ["*"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",

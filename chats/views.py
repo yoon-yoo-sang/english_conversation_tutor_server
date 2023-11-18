@@ -61,8 +61,8 @@ class MessageViewSet(BaseViewSet, CreateModelMixin):
     def create(self, request, *args, **kwargs):
         try:
             chat_id = request.data['chat']
-            chat = Chat.objects.get(id=chat_id)
             content = request.data['content']
+            chat = Chat.objects.get(id=chat_id)
         except Exception as e:
             return self.handle_error(str(e), status.HTTP_400_BAD_REQUEST, request.user.id)
 
