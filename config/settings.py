@@ -10,7 +10,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-DEBUG = True
+MODE = os.environ.get('MODE')
+
+DEBUG = True if MODE == 'dev' else False
 
 ALLOWED_HOSTS = []
 
@@ -84,7 +86,7 @@ SIMPLE_JWT = {
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'config.authenticate.CustomJWTAuthentication',
     )
 }
 

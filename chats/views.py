@@ -2,18 +2,18 @@ from django.db import transaction
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.mixins import CreateModelMixin
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from chats.models import Chat, Message
 from chats.serializers import ChatSerializer, MessageSerializer, MessagePairSerializer, MessageCreateSerializer
 from common.serializers import EmptySerializer
 from common.views import BaseViewSet
+from config.authenticate import CustomAuthenticated
 from openai_integration.openai_chat import Chat as OpenAIChat
 
 
 class ChatViewSet(BaseViewSet, CreateModelMixin):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [CustomAuthenticated]
     queryset = Chat.objects.all()
     serializer_class = ChatSerializer
 
@@ -23,7 +23,7 @@ class ChatViewSet(BaseViewSet, CreateModelMixin):
 
     @swagger_auto_schema(
         request_body=EmptySerializer,
-        responses={200: ChatSerializer}
+        responses={status.HTTP_200_OK: ChatSerializer}
     )
     @transaction.atomic
     def create(self, request, *args, **kwargs):
@@ -46,7 +46,7 @@ class ChatViewSet(BaseViewSet, CreateModelMixin):
 
 
 class MessageViewSet(BaseViewSet, CreateModelMixin):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [CustomAuthenticated]
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
     filter_fields = (
@@ -55,7 +55,7 @@ class MessageViewSet(BaseViewSet, CreateModelMixin):
 
     @swagger_auto_schema(
         request_body=MessageCreateSerializer,
-        responses={200: MessagePairSerializer}
+        responses={status.HTTP_200_OK: MessagePairSerializer}
     )
     @transaction.atomic
     def create(self, request, *args, **kwargs):

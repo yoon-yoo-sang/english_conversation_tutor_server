@@ -1,5 +1,3 @@
-import hashlib
-
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.models import UserManager
 from django.core.exceptions import MultipleObjectsReturned
@@ -21,6 +19,7 @@ class CustomUserManager(UserManager):
 
         user = self.model(
             email=self.normalize_email(email),
+            username=username,
             **extra_fields
         )
 
@@ -73,12 +72,11 @@ class User(BaseModel):
     def make_password(self, raw_password):
         self.password = make_password(raw_password)
 
+    def set_password(self, raw_password):
+        self.make_password(raw_password)
+
     def check_password(self, raw_password):
         return check_password(raw_password, self.password)
-
-    @staticmethod
-    def hash_password(raw_password):
-        return hashlib.sha256(raw_password.encode()).hexdigest()
 
     class Meta:
         db_table = 'user'
