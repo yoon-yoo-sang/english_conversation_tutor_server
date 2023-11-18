@@ -1,6 +1,8 @@
 # English Conversation Tutor Server
 english conversation tutoring server with django and openai
 
+python: 3.11.5
+
 ```
 ├── config/                 # Django main project directory
 │   ├── __init__.py
