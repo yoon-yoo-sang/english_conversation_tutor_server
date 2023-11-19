@@ -1,9 +1,20 @@
 # English Conversation Tutor Server
-english conversation tutoring server with django and openai
+English conversation tutoring server with Django and Openai
+
+Server Framework: Django
+CI/CD: Github Action
+Package: Docker
+Platform: Heroku
+DB: Heroku Postgresql
+AI: Openai API
 
 python: 3.11.5
 
 ```
+├── .github/                # Github action deploy configure
+│   └── workflows/
+│       └── deploy.yml
+│
 ├── config/                 # Django main project directory
 │   ├── __init__.py
 │   ├── asgi.py
@@ -38,11 +49,13 @@ python: 3.11.5
 │   ├── openai_chat.py
 │   └── choices.py
 │
-├── manage.py
 ├── .gitignore
-├── manage.py
+├── Dockerfile
+├── Procfile
 ├── README.md
 ├── docker-compose.yaml
-├── Dockerfile
-└── requirements.txt
+├── heroku.yml
+├── manage.py
+├── requirements.txt
+└── runtime.txt
 ```
