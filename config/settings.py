@@ -25,10 +25,11 @@ if DEBUG:
     }
 else:
     ALLOWED_HOSTS = ['english-conversation-tutor-6d013822cb8f.herokuapp.com']
+    ENV_DATABASES = os.environ.get("DATABASE_URL")
+    ENGINE = 'django.db.backends.postgresql'
     DATABASES = {
-        'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+        'default': dj_database_url.config(default=ENV_DATABASES)
     }
-
 
 INSTALLED_APPS = [
     "django.contrib.admin",
