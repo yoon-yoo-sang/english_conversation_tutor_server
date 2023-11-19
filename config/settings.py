@@ -9,9 +9,9 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ['SECRET_KEY']
 
-MODE = os.environ.get('MODE')
+MODE = os.environ['MODE']
 
 DEBUG = True if MODE == 'dev' else False
 
@@ -25,11 +25,10 @@ if DEBUG:
     }
 else:
     ALLOWED_HOSTS = ['english-conversation-tutor-6d013822cb8f.herokuapp.com']
-    ENV_DATABASES = os.environ["DATABASE_URL"]
-    ENGINE = 'django.db.backends.postgresql'
     DATABASES = {
-        'default': dj_database_url.config(default=ENV_DATABASES)
+        'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
     }
+
 
 INSTALLED_APPS = [
     "django.contrib.admin",
