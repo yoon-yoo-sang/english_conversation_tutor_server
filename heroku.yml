@@ -2,7 +2,5 @@ build:
   docker:
     web: Dockerfile
     target: prod
-    args:
-      - SECRET_KEY=$SECRET_KEY
 run:
   web: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
