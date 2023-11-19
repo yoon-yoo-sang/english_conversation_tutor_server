@@ -2,7 +2,7 @@ services:
   web:
     build:
       context: .
-      target: dev
+      target: $MODE
       args:
         - SECRET_KEY=$SECRET_KEY
     ports:
