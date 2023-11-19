@@ -1,14 +1,7 @@
 # English Conversation Tutor Server
-English conversation tutoring server with Django and Openai
+English conversation tutoring server with Django and Openai. Packaging Docker and use Heroku by cloud platform.
 
-Server Framework: Django
-CI/CD: Github Action
-Package: Docker
-Platform: Heroku
-DB: Heroku Postgresql
-AI: Openai API
-
-python: 3.11.5
+python version: 3.11.5
 
 ```
 ├── .github/                # Github action deploy configure
