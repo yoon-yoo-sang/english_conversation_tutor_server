@@ -3,6 +3,7 @@ from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
 
@@ -14,7 +15,20 @@ MODE = os.environ.get('MODE')
 
 DEBUG = True if MODE == 'dev' else False
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"] if DEBUG else ['english-conversation-tutor-6d013822cb8f.herokuapp.com']
+if DEBUG:
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+else:
+    ALLOWED_HOSTS = ['english-conversation-tutor-6d013822cb8f.herokuapp.com']
+    DATABASES = {
+        'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+    }
+
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -60,13 +74,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
 
 AUTH_USER_MODEL = "users.User"
 
