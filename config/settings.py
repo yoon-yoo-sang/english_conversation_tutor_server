@@ -25,7 +25,7 @@ if DEBUG:
     }
 else:
     ALLOWED_HOSTS = ['english-conversation-tutor-6d013822cb8f.herokuapp.com']
-    ENV_DATABASES = os.environ.get("DATABASE_URL")
+    ENV_DATABASES = os.environ["DATABASE_URL"]
     ENGINE = 'django.db.backends.postgresql'
     DATABASES = {
         'default': dj_database_url.config(default=ENV_DATABASES)
