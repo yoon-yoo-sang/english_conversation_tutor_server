@@ -12,6 +12,7 @@ EXPOSE $PORT
 ENV SECRET_KEY="6b1e7b2c40930eca39fc6b96aec6a43f7c8e2c61c52d44f753"
 WORKDIR /app
 COPY requirements.txt /app
+RUN pip3 install pip --upgrade
 RUN pip3 install -r requirements.txt
 COPY .. /app
 CMD ["sh", "-c", "echo Port is $PORT && exec gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"]
