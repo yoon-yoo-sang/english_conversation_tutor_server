@@ -18,6 +18,8 @@ class MessageSerializer(serializers.ModelSerializer):
         model = Message
         fields = (
             'id',
+            'created_at',
+            'updated_at',
             'chat',
             'role',
             'content',

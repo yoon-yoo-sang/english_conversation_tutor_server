@@ -21,6 +21,15 @@ class ChatViewSet(BaseViewSet, CreateModelMixin):
         queryset = super().get_queryset()
         return queryset.filter(user=self.request.user)
 
+    def list(self, request, *args, **kwargs):
+        user_id = request.user.id
+        if not user_id:
+            return self.handle_error('user_id is required', status.HTTP_400_BAD_REQUEST, request.user.id)
+
+        queryset = self.get_queryset().filter(user=user_id)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     @swagger_auto_schema(
         request_body=EmptySerializer,
         responses={status.HTTP_200_OK: ChatSerializer}
@@ -46,12 +55,21 @@ class ChatViewSet(BaseViewSet, CreateModelMixin):
 
 
 class MessageViewSet(BaseViewSet, CreateModelMixin):
-    permission_classes = [CustomAuthenticated]
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
-    filter_fields = (
-        'chat',
-    )
+
+    def list(self, request, *args, **kwargs):
+        user_id = request.user.id
+        if not user_id:
+            return self.handle_error('user_id is required', status.HTTP_400_BAD_REQUEST, request.user.id)
+
+        chat = Chat.objects.filter(user=user_id).first()
+        if not chat:
+            return self.handle_error('Chat does not exist', status.HTTP_404_NOT_FOUND, request.user.id)
+
+        queryset = self.get_queryset().filter(chat_id=chat.id)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     @swagger_auto_schema(
         request_body=MessageCreateSerializer,
